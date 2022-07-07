@@ -1,0 +1,19 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: {{ template "geoServer.fullname" . }}-auth-policy
+spec:
+  action: DENY
+  rules:
+    - from:
+        - source:
+            notRequestPrincipals:
+              - '*'
+      to:
+        - operation:
+            notPaths:
+              - /geoserver
+              - /geoserver/*
+  selector:
+    matchLabels:
+        {{- include "geoServer.labels" . | nindent 8 }}

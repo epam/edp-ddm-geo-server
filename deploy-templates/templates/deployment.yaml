@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "geoServer.fullname" . }}
+  labels:
+    {{- include "geoServer.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "geoServer.selectorLabels" . | nindent 6 }}
+  replicas: {{ .Values.geoServer.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "geoServer.labels" . | nindent 8 }}
+      annotations:
+        sidecar.istio.io/inject: "true"
+        backup.velero.io/backup-volumes: {{- include "geoServer.volume.name" . | indent 1 }}
+    spec:
+      containers:
+        - name: {{ template "geoServer.fullname" . }}
+          env:
+          {{- if .Values.geoServer.volume.enabled }}
+          - name: GEOSERVER_DATA_DIR
+            value: {{ .Values.geoServer.volume.mountPath }}
+          {{- end }}
+          - name: GEOSERVER_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.geoServer.secret.name }}
+                key: password
+          - name: PROXY_BASE_URL
+            {{- $url := printf "https://%s/geoserver" ( include "geoServer.hostname" . )}}
+            value: {{ $url }}
+          - name: GEOSERVER_CSRF_WHITELIST
+            value: '{{ template "officer-portal.hostname" (dict "root" $ "portal" "officer") }},{{ template "geoServer.hostname" . }}'
+          - name: HTTP_MAX_HEADER_SIZE
+            value: "64000"
+          - name: JAVA_OPTS
+            value: "-DALLOW_ENV_PARAMETRIZATION=true"
+          - name: GEOSERVER_ADMIN_USER
+            value: admin
+          image: "{{ .Values.image.name }}:{{ .Values.image.version }}"
+          ports:
+            - containerPort: {{ .Values.geoServer.service.port }}
+              name: {{.Values.geoServer.service.portName }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.geoServer.httpHealthCheckPath }}
+              port: {{ .Values.geoServer.service.port }}
+            failureThreshold: 10
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.geoServer.httpHealthCheckPath }}
+              port: {{ .Values.geoServer.service.port }}
+            failureThreshold: 10
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          volumeMounts:
+          - name: {{- include "geoServer.volume.name" . | indent 1 }}
+            mountPath: {{ .Values.geoServer.volume.mountPath }}
+            readOnly: {{ .Values.geoServer.volume.readOnly }}
+      {{- if .Values.geoServer.serviceAccount.enabled }}
+      serviceAccountName: {{ default ( include "geoServer.serviceAccountName" . ) .Values.geoServer.serviceAccount.name }}
+      {{- end }}
+      {{- if .Values.geoServer.podSecurityContext }}
+      securityContext: {{ toYaml .Values.geoServer.podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- if .Values.geoServer.volume.enabled }}
+      volumes:
+      - name: {{- include "geoServer.volume.name" . | indent 1 }}
+        persistentVolumeClaim:
+          claimName: {{- include "geoServer.volume.name" . | indent 1 }}
+      {{- end }}

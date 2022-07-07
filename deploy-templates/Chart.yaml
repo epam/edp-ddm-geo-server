@@ -1,0 +1,11 @@
+apiVersion: v2
+name: geo-server
+description: A Helm chart for Openshift
+type: application
+version: 0.1.0
+appVersion: 1.0.0
+home: https://gerrit.mdtu-ddm-edp-cicd/mdtu-ddm/devops/geo-server
+sources:
+  - https://gerrit.mdtu-ddm-edp-cicd/mdtu-ddm/devops/geo-server
+maintainers:
+  - name: DEV Team

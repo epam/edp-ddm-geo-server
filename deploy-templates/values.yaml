@@ -1,0 +1,39 @@
+# Default values for geoServer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+geoServer:
+  httpHealthCheckPath: /geoserver/index.html
+  replicas: 1
+  secret:
+    name: geo-server-admin-secret
+  podSecurityContext:
+    runAsUser: 0
+  serviceAccount:
+    enabled: true
+    name: geo-server
+  service:
+    type: ClusterIP
+    port: 8080
+    portName: http
+  volume:
+    enabled: true
+    mountPath: /data
+    readOnly: false
+    storageSize: 8Gi
+
+image:
+  name: nexus-docker-hosted.apps.cicd2.mdtu-ddm.projects.epam.com/mdtu-ddm-edp-cicd/geo-server-master
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  version: 1.0.0-SNAPSHOT.6
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+############## EDP VARIABLES TEST VALUES ##############################
+namespace: ns
+cdPipelineName: pipe
+cdPipelineStageName: dev
+dnsWildcard: edp-epam.com
