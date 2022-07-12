@@ -1,0 +1,16 @@
+{{- if .Values.geoServer.volume.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{- include "geoServer.volume.name" . | indent 1 }}
+  labels:
+    {{- include "geoServer.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.geoServer.volume.storageSize }}
+  storageClassName: {{ .Values.global.storageClass }}
+  volumeMode: Filesystem
+{{- end }}
