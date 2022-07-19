@@ -4,9 +4,6 @@
 
 geoServer:
   httpHealthCheckPath: /geoserver/index.html
-  image:
-    name: kartoza/geoserver
-    version: 2.21.0
   replicas: 1
   secret:
     name: geo-server-admin-secret

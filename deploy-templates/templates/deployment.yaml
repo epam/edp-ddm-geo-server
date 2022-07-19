@@ -41,7 +41,9 @@ spec:
             value: "64000"
           - name: JAVA_OPTS
             value: "-DALLOW_ENV_PARAMETRIZATION=true"
-          image: "{{ .Values.geoServer.image.name }}:{{ .Values.geoServer.image.version }}"
+          - name: GEOSERVER_ADMIN_USER
+            value: admin
+          image: "{{ .Values.image.name }}:{{ .Values.image.version }}"
           ports:
             - containerPort: {{ .Values.geoServer.service.port }}
               name: {{.Values.geoServer.service.portName }}
