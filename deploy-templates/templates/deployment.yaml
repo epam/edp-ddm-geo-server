@@ -34,10 +34,11 @@ spec:
                 name: {{ .Values.geoServer.secret.name }}
                 key: password
           - name: PROXY_BASE_URL
-            {{- $url := printf "https://%s/geoserver" ( include "geoServer.hostname" . )}}
-            value: {{ $url }}
+            value: https://{{ template "officer-portal.hostname" (dict "root" $ "portal" "officer") }}/geoserver
           - name: GEOSERVER_CSRF_WHITELIST
-            value: {{ template "geoServer.hostname" . }}
+            value: {{ template "officer-portal.hostname" (dict "root" $ "portal" "officer") }}
+          - name: HTTP_MAX_HEADER_SIZE
+            value: "64000"
           - name: JAVA_OPTS
             value: "-DALLOW_ENV_PARAMETRIZATION=true"
           image: "{{ .Values.geoServer.image.name }}:{{ .Values.geoServer.image.version }}"

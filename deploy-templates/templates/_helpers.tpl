@@ -65,9 +65,10 @@ Create the name of the service account to use
 {{- printf "%s-%s.%s" .Values.cdPipelineName .Values.cdPipelineStageName .Values.dnsWildcard }}
 {{- end }}
 
-{{- define "geoServer.hostname" -}}
-{{- $hostname := printf "%s-%s" .Release.Name .Release.Namespace }}
-{{- printf "%s-%s" $hostname (include "edp.hostnameSuffix" .) }}
+{{- define "officer-portal.hostname" -}}
+{{- $root := .root }}
+{{- $portal := .portal }}
+{{- printf "%s-%s" "officer-portal" (include "edp.hostnameSuffix" $root) }}
 {{- end }}
 
 {{- define "geoServer.url" -}}
