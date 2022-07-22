@@ -11,7 +11,7 @@ geoServer:
   secret:
     name: geo-server-admin-secret
   podSecurityContext:
-    runAsUser: 0
+    runAsUser: 1000
   serviceAccount:
     enabled: true
     name: geo-server
