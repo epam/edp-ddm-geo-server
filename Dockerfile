@@ -24,13 +24,6 @@ RUN set -eux \
         apt-transport-https curl gettext fonts-cantarell lmodern ttf-aenigma \
         ttf-bitstream-vera ttf-sjfonts tv-fonts  libapr1-dev libssl-dev  \
         wget zip unzip curl xsltproc certbot  cabextract gettext postgresql-client figlet  libpq-dev gdal-bin libgdal-dev
-#    libpq-dev gdal-bin libgdal-dev
-# Install gdal3 - bullseye doesn't build libgdal-java anymore so we can't upgrade
-RUN curl https://deb.meteo.guru/velivole-keyring.asc |  apt-key add - \
-    && echo "deb https://deb.meteo.guru/debian buster main" > /etc/apt/sources.list.d/meteo.guru.list \
-    && apt-get update \
-    && apt-get upgrade -y \
-    && apt-get -y --no-install-recommends install gdal-bin libgdal-java
 
 RUN set -e \
     export DEBIAN_FRONTEND=noninteractive \
