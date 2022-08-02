@@ -8,7 +8,7 @@ geoServer:
   secret:
     name: geo-server-admin-secret
   podSecurityContext:
-    runAsUser: 1000
+    runAsUser: 0
   serviceAccount:
     enabled: true
     name: geo-server
