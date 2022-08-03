@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "geoServer.name" . }}
+  labels:
+    {{- include "geoServer.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.geoServer.service.type }}
+  ports:
+    - port: {{ .Values.geoServer.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: {{ .Values.geoServer.service.portName}}
+  selector:
+    {{- include "geoServer.selectorLabels" . | nindent 4 }}

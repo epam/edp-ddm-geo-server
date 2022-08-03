@@ -19,7 +19,7 @@ spec:
       labels:
         {{- include "geoServer.labels" . | nindent 8 }}
       annotations:
-        sidecar.istio.io/inject: "false"
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
         - name: {{ template "geoServer.fullname" . }}
@@ -34,9 +34,10 @@ spec:
                 name: {{ .Values.geoServer.secret.name }}
                 key: password
           - name: PROXY_BASE_URL
-            value: https://{{ template "officer-portal.hostname" (dict "root" $ "portal" "officer") }}/geoserver
+            {{- $url := printf "https://%s/geoserver" ( include "geoServer.hostname" . )}}
+            value: {{ $url }}
           - name: GEOSERVER_CSRF_WHITELIST
-            value: {{ template "officer-portal.hostname" (dict "root" $ "portal" "officer") }}
+            value: '{{ template "officer-portal.hostname" (dict "root" $ "portal" "officer") }},{{ template "geoServer.hostname" . }}'
           - name: HTTP_MAX_HEADER_SIZE
             value: "64000"
           - name: JAVA_OPTS
@@ -52,7 +53,7 @@ spec:
               path: {{ .Values.geoServer.httpHealthCheckPath }}
               port: {{ .Values.geoServer.service.port }}
             failureThreshold: 10
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
@@ -61,7 +62,7 @@ spec:
               path: {{ .Values.geoServer.httpHealthCheckPath }}
               port: {{ .Values.geoServer.service.port }}
             failureThreshold: 10
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
