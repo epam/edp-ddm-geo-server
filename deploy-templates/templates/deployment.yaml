@@ -20,6 +20,7 @@ spec:
         {{- include "geoServer.labels" . | nindent 8 }}
       annotations:
         sidecar.istio.io/inject: "true"
+        backup.velero.io/backup-volumes: {{- include "geoServer.volume.name" . | indent 1 }}
     spec:
       containers:
         - name: {{ template "geoServer.fullname" . }}
