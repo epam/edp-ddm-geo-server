@@ -3,28 +3,27 @@ kind: RequestAuthentication
 metadata:
   name: {{ template "geoServer.fullname" . }}-request-api-auth
 spec:
+  selector:
+    matchLabels:
+        {{- include "geoServer.labels" . | nindent 8 }}
   jwtRules:
     - forwardOriginalToken: true
       fromHeaders:
         - name: X-Access-Token
-      issuer: >-
-        https://platform-keycloak.{{.Values.dnsWildcard }}/auth/realms/{{ .Release.Namespace }}-officer-portal
-      jwksUri: >-
-        https://platform-keycloak.{{.Values.dnsWildcard }}/auth/realms/{{ .Release.Namespace }}-officer-portal/protocol/openid-connect/certs
+      issuer: {{ template "issuer.officer" . }}
+      jwksUri: {{ template "jwksUri.officer" . }}
     - forwardOriginalToken: true
       fromHeaders:
         - name: X-Access-Token
-      issuer: >-
-        https://platform-keycloak.{{.Values.dnsWildcard }}/auth/realms/{{ .Release.Namespace }}-citizen-portal
-      jwksUri: >-
-        https://platform-keycloak.{{.Values.dnsWildcard }}/auth/realms/{{ .Release.Namespace }}-citizen-portal/protocol/openid-connect/certs
+      issuer: {{ template "issuer.citizen" . }}
+      jwksUri: {{ template "jwksUri.citizen" . }}
     - forwardOriginalToken: true
       fromHeaders:
         - name: X-Access-Token
-      issuer: >-
-        https://platform-keycloak.{{.Values.dnsWildcard }}/auth/realms/{{ .Release.Namespace }}-external-system
-      jwksUri: >-
-        https://platform-keycloak.{{.Values.dnsWildcard }}/auth/realms/{{ .Release.Namespace }}-external-system/protocol/openid-connect/certs
-  selector:
-    matchLabels:
-        {{- include "geoServer.labels" . | nindent 8 }}
+      issuer: {{ template "issuer.external" . }}
+      jwksUri: {{ template "jwksUri.external" . }}
+    - forwardOriginalToken: true
+      fromHeaders:
+        - name: X-Access-Token
+      issuer: {{ template "issuer.admin" . }}
+      jwksUri: {{ template "jwksUri.admin" . }}
