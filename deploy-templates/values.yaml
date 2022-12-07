@@ -21,7 +21,13 @@ geoServer:
     mountPath: /data
     readOnly: false
     storageSize: 8Gi
-
+keycloak:
+  realms:
+    officer: officer-portal
+    citizen: citizen-portal
+    admin: admin
+    external: external-system
+  certificatesEndpoint: /protocol/openid-connect/certs
 image:
   name: nexus-docker-hosted.apps.cicd2.mdtu-ddm.projects.epam.com/mdtu-ddm-edp-cicd/geo-server-master
   pullPolicy: IfNotPresent

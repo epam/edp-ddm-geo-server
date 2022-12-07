@@ -83,3 +83,67 @@ Create the name of the service account to use
 {{- define "geoServer.volume.name" -}}
 {{- printf "%s-%s" (include "geoServer.name" . ) "data" }}
 {{- end }}
+
+{{- define "keycloak.url" -}}
+{{- printf "%s%s" "https://" .Values.keycloak.host }}
+{{- end -}}
+
+{{- define "keycloak.customUrl" -}}
+{{- printf "%s%s" "https://" .Values.keycloak.customHost }}
+{{- end -}}
+
+{{- define "keycloak.urlPrefix" -}}
+{{- printf "%s%s%s" (include "keycloak.url" .) "/auth/realms/" .Release.Namespace -}}
+{{- end -}}
+
+{{- define "keycloak.customUrlPrefix" -}}
+{{- printf "%s%s%s" (include "keycloak.customUrl" .) "/auth/realms/" .Release.Namespace -}}
+{{- end -}}
+
+{{- define "issuer.officer" -}}
+{{- if .Values.keycloak.customHost }}
+{{- printf "%s-%s" (include "keycloak.customUrlPrefix" .) .Values.keycloak.realms.officer -}}
+{{- else }}
+{{- printf "%s-%s" (include "keycloak.urlPrefix" .) .Values.keycloak.realms.officer -}}
+{{- end }}
+{{- end -}}
+
+{{- define "issuer.citizen" -}}
+{{- if .Values.keycloak.customHost }}
+{{- printf "%s-%s" (include "keycloak.customUrlPrefix" .) .Values.keycloak.realms.citizen -}}
+{{- else }}
+{{- printf "%s-%s" (include "keycloak.urlPrefix" .) .Values.keycloak.realms.citizen -}}
+{{- end }}
+{{- end -}}
+
+{{- define "issuer.admin" -}}
+{{- if .Values.keycloak.customHost }}
+{{- printf "%s-%s" (include "keycloak.customUrlPrefix" .) .Values.keycloak.realms.admin -}}
+{{- else }}
+{{- printf "%s-%s" (include "keycloak.urlPrefix" .) .Values.keycloak.realms.admin -}}
+{{- end }}
+{{- end -}}
+
+{{- define "issuer.external" -}}
+{{- if .Values.keycloak.customHost }}
+{{- printf "%s-%s" (include "keycloak.customUrlPrefix" .) .Values.keycloak.realms.external -}}
+{{- else }}
+{{- printf "%s-%s" (include "keycloak.urlPrefix" .) .Values.keycloak.realms.external -}}
+{{- end }}
+{{- end -}}
+
+{{- define "jwksUri.officer" -}}
+{{- printf "%s-%s%s" (include "keycloak.urlPrefix" .) .Values.keycloak.realms.officer .Values.keycloak.certificatesEndpoint -}}
+{{- end -}}
+
+{{- define "jwksUri.citizen" -}}
+{{- printf "%s-%s%s" (include "keycloak.urlPrefix" .) .Values.keycloak.realms.citizen .Values.keycloak.certificatesEndpoint -}}
+{{- end -}}
+
+{{- define "jwksUri.admin" -}}
+{{- printf "%s-%s%s" (include "keycloak.urlPrefix" .) .Values.keycloak.realms.admin .Values.keycloak.certificatesEndpoint -}}
+{{- end -}}
+
+{{- define "jwksUri.external" -}}
+{{- printf "%s-%s%s" (include "keycloak.urlPrefix" .) .Values.keycloak.realms.external .Values.keycloak.certificatesEndpoint -}}
+{{- end -}}
