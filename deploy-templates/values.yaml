@@ -34,6 +34,11 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   version: 1.0.0-SNAPSHOT.6
 
+edpComponent:
+  description: "Користувацький інтерфейс для адміністрування гео-даних"
+  displayName: "Веб-інтерфейс управління гео-даними (Geo-server UI)"
+  operationalZone: "registry-administration-zone"
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
