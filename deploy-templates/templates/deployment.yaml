@@ -17,6 +17,7 @@ spec:
   template:
     metadata:
       labels:
+        collect.logs: "plain-text"
         {{- include "geoServer.labels" . | nindent 8 }}
       annotations:
         sidecar.istio.io/inject: "true"
