@@ -10,10 +10,7 @@ spec:
       {{- include "geoServer.selectorLabels" . | nindent 6 }}
   replicas: {{ .Values.geoServer.replicas }}
   strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       labels:
