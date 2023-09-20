@@ -2,9 +2,24 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+global:
+  registry:
+    geoServer:
+      replicas: 1
+      istio:
+        sidecar:
+          enabled: true
+          resources:
+            requests: {}
+            limits: {}
+      container:
+        resources:
+          requests: {}
+          limits: {}
+        envVars: {}
+
 geoServer:
   httpHealthCheckPath: /geoserver/index.html
-  replicas: 1
   secret:
     name: geo-server-admin-secret
   podSecurityContext:
@@ -21,6 +36,11 @@ geoServer:
     mountPath: /data
     readOnly: false
     storageSize: 8Gi
+  javaOpts: "-DALLOW_ENV_PARAMETRIZATION=true -javaagent:/metrics-exporter/jmx_prometheus_javaagent-0.19.0.jar=9999:/metrics-exporter/geo-server-metrics-config.yaml"
+  jvmMetrics:
+    portName: jvm-metrics
+    port: 9999
+
 keycloak:
   realms:
     officer: officer-portal
@@ -35,7 +55,7 @@ image:
   version: 1.0.0-SNAPSHOT.6
 
 edpComponent:
-  description: "Користувацький інтерфейс для адміністрування гео-даних"
+  description: "Користувацький інтерфейс для адміністрування гео-даних."
   displayName: "Веб-інтерфейс управління гео-даними (Geo-server UI)"
   operationalZone: "registry-administration-zone"
 

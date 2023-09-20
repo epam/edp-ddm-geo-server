@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       {{- include "geoServer.selectorLabels" . | nindent 6 }}
-  replicas: {{ .Values.geoServer.replicas }}
+  replicas: {{ .Values.global.registry.geoServer.replicas }}
   strategy:
     type: Recreate
   template:
@@ -17,12 +17,20 @@ spec:
         collect.logs: "plain-text"
         {{- include "geoServer.labels" . | nindent 8 }}
       annotations:
-        sidecar.istio.io/inject: "true"
         backup.velero.io/backup-volumes: {{- include "geoServer.volume.name" . | indent 1 }}
+        {{- if .Values.global.registry.geoServer.istio.sidecar.enabled }}
+        traffic.sidecar.istio.io/excludeOutboundPorts: '6379'
+        sidecar.istio.io/inject: 'true'
+        {{- include "geoServer.istioResources" . | nindent 8 }}
+        {{- end }}
     spec:
       containers:
         - name: {{ template "geoServer.fullname" . }}
           env:
+          {{- range $name, $value := .Values.global.registry.geoServer.container.envVars }}
+          - name: {{ $name }}
+            value: {{ $value | quote }}
+          {{- end }}
           {{- if .Values.geoServer.volume.enabled }}
           - name: GEOSERVER_DATA_DIR
             value: {{ .Values.geoServer.volume.mountPath }}
@@ -40,13 +48,15 @@ spec:
           - name: HTTP_MAX_HEADER_SIZE
             value: "64000"
           - name: JAVA_OPTS
-            value: "-DALLOW_ENV_PARAMETRIZATION=true"
+            value: {{ .Values.geoServer.javaOpts }}
           - name: GEOSERVER_ADMIN_USER
             value: admin
           image: "{{ .Values.image.name }}:{{ .Values.image.version }}"
           ports:
             - containerPort: {{ .Values.geoServer.service.port }}
               name: {{.Values.geoServer.service.portName }}
+            - containerPort: {{ .Values.geoServer.jvmMetrics.port }}
+              name: {{.Values.geoServer.jvmMetrics.portName }}
           livenessProbe:
             httpGet:
               path: {{ .Values.geoServer.httpHealthCheckPath }}
@@ -65,6 +75,10 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
+          {{- if or .Values.global.registry.geoServer.container.resources.requests .Values.global.registry.geoServer.container.resources.limits }}
+          resources:
+            {{- toYaml .Values.global.registry.geoServer.container.resources | nindent 12 }}
+          {{- end }}
           volumeMounts:
           - name: {{- include "geoServer.volume.name" . | indent 1 }}
             mountPath: {{ .Values.geoServer.volume.mountPath }}
