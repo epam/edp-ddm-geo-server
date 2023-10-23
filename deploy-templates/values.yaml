@@ -3,20 +3,27 @@
 # Declare variables to be passed into your templates.
 
 global:
+  container:
+    requestsLimitsEnabled: true
+  istio:
+    sidecar:
+      requestsLimitsEnabled: true
+      resources:
+        requests: {}
+        limits: {}
   registry:
     geoServer:
-      replicas: 1
+      container:
+        envVars: {}
+        resources:
+          requests: {}
+          limits: {}
       istio:
         sidecar:
           enabled: true
           resources:
             requests: {}
             limits: {}
-      container:
-        resources:
-          requests: {}
-          limits: {}
-        envVars: {}
 
 geoServer:
   httpHealthCheckPath: /geoserver/index.html
